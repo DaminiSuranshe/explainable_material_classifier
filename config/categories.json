@@ -1,0 +1,54 @@
+{
+  "version": "1.0",
+  "categories": {
+    "Synthetic Materials": {
+      "Plastic - PET": {},
+      "Plastic - HDPE": {},
+      "Plastic - LDPE": {},
+      "Plastic - PP": {},
+      "Plastic - Mixed": {},
+      "Rubber": {},
+      "Composite Polymers": {}
+    },
+    "Metallic Materials": {
+      "Aluminum": {},
+      "Steel/Iron": {},
+      "Copper": {},
+      "Mixed Metals": {}
+    },
+    "Cellulose-Based Materials": {
+      "Paper": {},
+      "Cardboard": {},
+      "Wood": {},
+      "Natural Fibers": {}
+    },
+    "Glass & Ceramics": {
+      "Clear Glass": {},
+      "Colored Glass": {},
+      "Ceramic": {}
+    },
+    "Organic Matter": {
+      "Food Waste": {},
+      "Plant/Garden Matter": {},
+      "Biodegradable Items": {}
+    },
+    "Electronic Components": {
+      "Circuit Boards": {},
+      "Batteries": {},
+      "Mobile Devices": {},
+      "Electronic Accessories": {}
+    },
+    "Hazardous Materials": {
+      "Medical Waste": {},
+      "Chemical Containers": {},
+      "Sharp Objects": {}
+    },
+    "Textile Materials": {
+      "Natural Fabric": {},
+      "Synthetic Fabric": {}
+    },
+    "Unknown/Mixed Materials": {
+      "Unknown": {}
+    }
+  }
+}
