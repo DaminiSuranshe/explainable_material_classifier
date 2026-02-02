@@ -3,9 +3,10 @@ Centralized logging configuration.
 """
 
 import logging
+import json
 import sys
 from pathlib import Path
-
+from datetime import datetime
 
 def setup_logger(
     name: str,
@@ -43,5 +44,28 @@ def setup_logger(
     if not logger.handlers:
         logger.addHandler(console_handler)
         logger.addHandler(file_handler)
+
+    return logger
+
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        log_record = {
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+        return json.dumps(log_record)
+
+
+def setup_logger(name: str, level=logging.INFO) -> logging.Logger:
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(JsonFormatter())
+
+    if not logger.handlers:
+        logger.addHandler(handler)
 
     return logger

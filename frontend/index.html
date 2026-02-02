@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Material Classifier</title>
+</head>
+<body>
+  <h2>Upload Image</h2>
+  <input type="file" id="fileInput">
+  <button onclick="upload()">Predict</button>
+  <pre id="output"></pre>
+
+<script>
+async function upload() {
+  const file = document.getElementById("fileInput").files[0];
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("http://localhost:8000/predict", {
+    method: "POST",
+    body: formData
+  });
+
+  const json = await res.json();
+  document.getElementById("output").textContent =
+    JSON.stringify(json, null, 2);
+}
+</script>
+</body>
+</html>
