@@ -12,7 +12,7 @@
     },
     "Metallic Materials": {
       "Aluminum": {},
-      "Steel/Iron": {},
+      "Steel": {},
       "Copper": {},
       "Mixed Metals": {}
     },
@@ -29,7 +29,7 @@
     },
     "Organic Matter": {
       "Food Waste": {},
-      "Plant/Garden Matter": {},
+      "Garden Matter": {},
       "Biodegradable Items": {}
     },
     "Electronic Components": {
@@ -43,11 +43,11 @@
       "Chemical Containers": {},
       "Sharp Objects": {}
     },
-    "Textile Materials": {
+    "Textile Material": {
       "Natural Fabric": {},
       "Synthetic Fabric": {}
     },
-    "Unknown/Mixed Materials": {
+    "Unknown-Mixed Materials": {
       "Unknown": {}
     }
   }

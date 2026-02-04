@@ -1,12 +1,12 @@
 """
 Small-data dataset loader with heavy augmentation.
 
-This loader is designed for:
+Designed for:
 - 10–50 images per class
 - Transfer learning
 - Aggressive on-the-fly augmentation
 
-It integrates with the existing dataset structure:
+Dataset structure:
 dataset/splits/{train,validation,test}/<Major>/<Sub>/*.jpg
 """
 
@@ -37,6 +37,7 @@ class SmallDataImageDataset(Dataset):
     ):
         self.root_dir = Path(root_dir)
         self.category_manager = category_manager
+        self.num_classes = category_manager.num_subcategories
         self.is_training = is_training
         self.augmentation_multiplier = augmentation_multiplier
 
@@ -46,7 +47,7 @@ class SmallDataImageDataset(Dataset):
         )
 
         self.samples: List[Tuple[Path, int]] = []
-        self.class_counts: Counter = Counter()
+        self.class_counts: Counter[int] = Counter()
 
         self._scan_dataset()
 
@@ -62,8 +63,9 @@ class SmallDataImageDataset(Dataset):
                 if not sub_dir.is_dir():
                     continue
 
-                major = major_dir.name
-                sub = sub_dir.name
+                major = major_dir.name.strip()
+                sub = sub_dir.name.strip()
+
                 _, sub_id = self.category_manager.encode(major, sub)
 
                 for img_path in sub_dir.iterdir():
@@ -73,7 +75,7 @@ class SmallDataImageDataset(Dataset):
                     self.samples.append((img_path, sub_id))
                     self.class_counts[sub_id] += 1
 
-        if len(self.samples) == 0:
+        if not self.samples:
             raise RuntimeError("No images found in dataset")
 
     def __len__(self) -> int:
@@ -101,19 +103,18 @@ class SmallDataImageDataset(Dataset):
             "label": torch.tensor(label, dtype=torch.long),
         }
 
-    def get_class_weights(self) -> torch.Tensor:
+    def compute_class_weights(self) -> torch.Tensor:
         """
         Compute inverse-frequency class weights.
+
+        Returns:
+            Tensor of shape [num_classes]
         """
-        total = sum(self.class_counts.values())
-        weights = {
-            cls: total / count for cls, count in self.class_counts.items()
-        }
+        weights = torch.zeros(self.num_classes)
 
-        max_cls = max(weights.keys())
-        weight_tensor = torch.zeros(max_cls + 1)
+        for cls in range(self.num_classes):
+            count = self.class_counts.get(cls, 0)
+            weights[cls] = 1.0 / (count + 1e-6)
 
-        for cls, weight in weights.items():
-            weight_tensor[cls] = weight
-
-        return weight_tensor
+        weights = weights / weights.mean()
+        return weights

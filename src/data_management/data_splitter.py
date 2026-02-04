@@ -7,9 +7,9 @@ import shutil
 from pathlib import Path
 from typing import Tuple
 
-from src.utils.logger import setup_logger
+from src.utils.logger import get_logger
 
-logger = setup_logger("data_splitter")
+logger = get_logger("data_splitter")
 
 
 def split_dataset(

@@ -3,12 +3,17 @@ Dataset preparation script.
 """
 
 import argparse
+from tkinter.filedialog import test
 
 from src.data_management.data_splitter import split_dataset
-from src.utils.logger import setup_logger
+from src.utils.logger import get_logger
 
-logger = setup_logger("prepare_dataset")
 
+logger = get_logger(
+    "prepare_dataset",
+    log_dir="logs",
+    json_logs=False,
+)
 
 def main():
     parser = argparse.ArgumentParser(description="Prepare dataset")
@@ -30,6 +35,7 @@ def main():
         split_ratio=tuple(args.split),
     )
 
+logger.info("Starting dataset preparation")
 
 if __name__ == "__main__":
     main()

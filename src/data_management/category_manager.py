@@ -3,16 +3,17 @@ Category hierarchy manager.
 
 - Loads hierarchical categories from JSON
 - Dynamically assigns IDs
-- Supports adding new categories without code changes
+- Supports encoding and decoding
+- Stable across training and inference
 """
 
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 import json
 from pathlib import Path
 
-from src.utils.logger import setup_logger
+from src.utils.logger import get_logger
 
-logger = setup_logger("category_manager")
+logger = get_logger("category_manager")
 
 
 class CategoryManager:
@@ -26,12 +27,30 @@ class CategoryManager:
             category_file: Path to categories.json
         """
         self.category_file = Path(category_file)
+
         self.major_to_id: Dict[str, int] = {}
         self.sub_to_id: Dict[str, int] = {}
+
         self.id_to_major: Dict[int, str] = {}
         self.id_to_sub: Dict[int, str] = {}
 
         self._load_categories()
+
+    # --------------------------------------------------
+    # Properties
+    # --------------------------------------------------
+
+    @property
+    def num_subcategories(self) -> int:
+        return len(self.sub_to_id)
+
+    @property
+    def num_major_categories(self) -> int:
+        return len(self.major_to_id)
+
+    # --------------------------------------------------
+    # Loading
+    # --------------------------------------------------
 
     def _load_categories(self) -> None:
         """
@@ -67,6 +86,10 @@ class CategoryManager:
             len(self.sub_to_id),
         )
 
+    # --------------------------------------------------
+    # Encoding
+    # --------------------------------------------------
+
     def encode(self, major: str, sub: str) -> Tuple[int, int]:
         """
         Encode category names to numeric IDs.
@@ -88,26 +111,44 @@ class CategoryManager:
 
         return self.major_to_id[major], self.sub_to_id[full_sub]
 
+    # --------------------------------------------------
+    # Decoding
+    # --------------------------------------------------
+
     def decode(self, major_id: int, sub_id: int) -> Tuple[str, str]:
         """
         Decode numeric IDs back to category names.
 
-        Args:
-            major_id: Major category ID
-            sub_id: Subcategory ID
-
         Returns:
             (major_name, sub_name)
         """
+        if major_id not in self.id_to_major:
+            raise ValueError(f"Unknown major id: {major_id}")
+
+        if sub_id not in self.id_to_sub:
+            raise ValueError(f"Unknown subcategory id: {sub_id}")
+
         major = self.id_to_major[major_id]
-        sub_full = self.id_to_sub[sub_id]
-        _, sub = sub_full.split("::")
+        _, sub = self.id_to_sub[sub_id].split("::")
 
         return major, sub
+
+    def decode_subcategory(self, sub_id: int) -> str:
+        """
+        Decode subcategory ID back to 'Major::Sub' label.
+        """
+        if sub_id not in self.id_to_sub:
+            raise ValueError(f"Unknown subcategory id: {sub_id}")
+
+        return self.id_to_sub[sub_id]
+
+    # --------------------------------------------------
+    # Utilities
+    # --------------------------------------------------
 
     def num_classes(self) -> Tuple[int, int]:
         """
         Returns:
             (num_major_classes, num_sub_classes)
         """
-        return len(self.major_to_id), len(self.sub_to_id)
+        return self.num_major_categories, self.num_subcategories

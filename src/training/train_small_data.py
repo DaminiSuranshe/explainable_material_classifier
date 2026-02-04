@@ -138,7 +138,7 @@ def main():
 
     model.freeze_backbone()
 
-    class_weights = train_ds.get_class_weights().to(device)
+    class_weights = train_ds.compute_class_weights().to(device)
 
     criterion = FocalLoss(
         gamma=cfg["loss"]["focal_loss"]["gamma"],
